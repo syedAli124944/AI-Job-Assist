@@ -7,6 +7,7 @@ from app.api import agents, auth, health
 from app.core.config import get_settings
 from app.db.base import Base
 from app.db.session import engine
+import app.models  # noqa: F401 — ensures all models are registered on Base.metadata
 
 settings = get_settings()
 
