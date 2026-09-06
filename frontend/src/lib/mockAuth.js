@@ -1,47 +1,75 @@
-// Mock authentication functions — no real backend needed
-// Simulates JWT token login/register
+// Real authentication with backend API
 
-const MOCK_USER = {
-  id: "user-001",
-  name: "Sarah Johnson",
-  email: "sarah@example.com",
-  avatar: null,
-};
-
-const MOCK_TOKEN = "mock.jwt.token.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9";
+const API_BASE_URL = "http://localhost:8000";
 
 export async function mockLogin({ email, password }) {
-  // Simulate network delay
-  await new Promise((res) => setTimeout(res, 1200));
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
 
-  // Simple mock check — any valid-looking email + password works
-  if (!email || !password || password.length < 6) {
-    throw new Error("Invalid credentials. Please try again.");
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || "Invalid credentials. Please try again.");
+    }
+
+    const data = await response.json();
+    localStorage.setItem("auth_token", data.access_token);
+    
+    const userResponse = await fetch(`${API_BASE_URL}/auth/me`, {
+      headers: { Authorization: `Bearer ${data.access_token}` },
+    });
+    const user = await userResponse.json();
+    localStorage.setItem("auth_user", JSON.stringify(user));
+    
+    return { user, token: data.access_token };
+  } catch (err) {
+    throw new Error(err.message || "Login failed");
   }
-
-  const user = { ...MOCK_USER, email };
-  localStorage.setItem("auth_token", MOCK_TOKEN);
-  localStorage.setItem("auth_user", JSON.stringify(user));
-  return { user, token: MOCK_TOKEN };
 }
 
 export async function mockRegister({ name, email, password }) {
-  await new Promise((res) => setTimeout(res, 1400));
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
 
-  if (!email || !password || !name) {
-    throw new Error("All fields are required.");
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || "Registration failed");
+    }
+
+    const user = await response.json();
+    localStorage.setItem("auth_user", JSON.stringify(user));
+    
+    return { user, token: null };
+  } catch (err) {
+    throw new Error(err.message || "Registration failed");
   }
-
-  const user = { ...MOCK_USER, name, email };
-  localStorage.setItem("auth_token", MOCK_TOKEN);
-  localStorage.setItem("auth_user", JSON.stringify(user));
-  return { user, token: MOCK_TOKEN };
 }
 
 export async function mockForgotPassword({ email }) {
-  await new Promise((res) => setTimeout(res, 1000));
-  if (!email) throw new Error("Email is required.");
-  return { message: "Reset link sent" };
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || "Failed to send reset link");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    throw new Error(err.message || "Forgot password failed");
+  }
 }
 
 export function getStoredUser() {
