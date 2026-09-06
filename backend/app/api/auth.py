@@ -1,5 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from app.api.deps import get_current_user
+from app.schemas.user import UserRead
+from app.models.user import User
+
 
 from app.db.session import get_db
 from app.schemas.user import Token, UserCreate, UserLogin, UserRead
@@ -28,3 +32,8 @@ def login(credentials: UserLogin, db: Session = Depends(get_db)):
         raise HTTPException(status_code=401, detail="Invalid email or password")
     token = issue_token_for_user(user)
     return Token(access_token=token)
+
+
+@router.get("/me", response_model=UserRead)
+def read_current_user(current_user: User = Depends(get_current_user)):
+    return current_user
