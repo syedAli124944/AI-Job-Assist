@@ -19,12 +19,26 @@ import CoverLetterPage from "./features/coverletter/CoverLetterPage";
 import ApplicationTrackerPage from "./features/tracker/ApplicationTrackerPage";
 import NotificationsPage from "./features/notifications/NotificationsPage";
 
+import { useEffect } from "react";
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [pathname]);
+
+  return null;
+}
+
 export default function App() {
   const location = useLocation();
 
   return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
+    <>
+      <ScrollToTop />
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
         {/* Landing page */}
         <Route path="/" element={<LandingPage />} />
 
@@ -46,5 +60,6 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AnimatePresence>
-  );
+  </>
+);
 }

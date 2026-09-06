@@ -1,6 +1,88 @@
 import { api } from "./api";
 import { MOCK_JOBS, MOCK_APPLICATIONS, MOCK_NOTIFICATIONS, MOCK_USER } from "./mockData";
 
+export const DEFAULT_NOTIFICATION_SETTINGS = {
+  emailJobRecommendations: true,
+  emailApplicationUpdates: true,
+  emailInterviewReminders: true,
+  emailWeeklyDigest: false,
+  inAppSoundAlerts: true,
+  inAppToastNotifications: true,
+  inAppBadgeCount: true,
+  digestFrequency: "instant",
+};
+
+export function getNotificationSettings() {
+  try {
+    const stored = localStorage.getItem("user_notification_settings");
+    if (stored) return { ...DEFAULT_NOTIFICATION_SETTINGS, ...JSON.parse(stored) };
+  } catch {}
+  return DEFAULT_NOTIFICATION_SETTINGS;
+}
+
+export function saveNotificationSettings(settings) {
+  try {
+    localStorage.setItem("user_notification_settings", JSON.stringify(settings));
+    window.dispatchEvent(new Event("notification_settings_updated"));
+  } catch {}
+  return settings;
+}
+
+export function getUserNotifications() {
+  try {
+    const stored = localStorage.getItem("user_notifications");
+    if (stored) return JSON.parse(stored);
+  } catch {}
+  localStorage.setItem("user_notifications", JSON.stringify(MOCK_NOTIFICATIONS));
+  return MOCK_NOTIFICATIONS;
+}
+
+export function saveUserNotifications(notifications) {
+  try {
+    localStorage.setItem("user_notifications", JSON.stringify(notifications));
+    window.dispatchEvent(new Event("notifications_updated"));
+  } catch {}
+}
+
+export function addNotification({ type = "update", title, message }) {
+  const current = getUserNotifications();
+  const newNotif = {
+    id: `notif-${Date.now()}`,
+    type,
+    title,
+    message,
+    time: "Just now",
+    read: false,
+    createdAt: new Date().toISOString(),
+  };
+
+  const updated = [newNotif, ...current];
+  saveUserNotifications(updated);
+  return newNotif;
+}
+
+export function markNotificationRead(id) {
+  const current = getUserNotifications();
+  const updated = current.map((n) => (n.id === id ? { ...n, read: true } : n));
+  saveUserNotifications(updated);
+}
+
+export function markAllNotificationsRead() {
+  const current = getUserNotifications();
+  const updated = current.map((n) => ({ ...n, read: true }));
+  saveUserNotifications(updated);
+}
+
+export function deleteNotification(id) {
+  const current = getUserNotifications();
+  const updated = current.filter((n) => n.id !== id);
+  saveUserNotifications(updated);
+}
+
+export function clearAllNotifications() {
+  saveUserNotifications([]);
+}
+
 export function getUserApplications() {
   try {
     const stored = localStorage.getItem("user_applications");
@@ -60,6 +142,13 @@ export function applyToJob(job) {
 
   const updated = [newApp, ...apps];
   saveUserApplications(updated);
+
+  addNotification({
+    type: "update",
+    title: "Application Submitted",
+    message: `Successfully applied to ${job.title} at ${job.company}.`,
+  });
+
   return { success: true, application: newApp };
 }
 
@@ -118,6 +207,11 @@ export async function uploadResumeApi(file) {
   };
 
   localStorage.setItem("user_resume", JSON.stringify(parsedResume));
+  addNotification({
+    type: "system",
+    title: "Resume Analyzed",
+    message: `Extracted skills and profile data from ${file.name}.`,
+  });
   return parsedResume;
 }
 
@@ -127,6 +221,11 @@ export async function savePreferencesApi(preferences) {
     if (res.data) {
       localStorage.setItem("user_preferences", JSON.stringify(preferences));
       localStorage.setItem("onboarding_complete", "true");
+      addNotification({
+        type: "system",
+        title: "Preferences Saved",
+        message: "Your career preferences and search filters have been updated.",
+      });
       return res.data;
     }
   } catch {
@@ -135,6 +234,11 @@ export async function savePreferencesApi(preferences) {
 
   localStorage.setItem("user_preferences", JSON.stringify(preferences));
   localStorage.setItem("onboarding_complete", "true");
+  addNotification({
+    type: "system",
+    title: "Preferences Saved",
+    message: "Your career preferences and search filters have been updated.",
+  });
 
   return {
     success: true,
