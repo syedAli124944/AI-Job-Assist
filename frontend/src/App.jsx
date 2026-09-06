@@ -1,24 +1,29 @@
-import { Route, Routes } from "react-router-dom";
-import { useHealthCheck } from "./hooks/useHealthCheck";
+import { Navigate, Route, Routes } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
 
-function HomePage() {
-  const backendStatus = useHealthCheck();
-
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-      <h1 className="text-2xl font-bold">AI Job Search Assistant</h1>
-      <p>
-        Backend status:{" "}
-        <span className="font-mono">{backendStatus}</span>
-      </p>
-    </div>
-  );
-}
+import LoginPage from "./features/auth/LoginPage";
+import RegisterPage from "./features/auth/RegisterPage";
+import ForgotPasswordPage from "./features/auth/ForgotPasswordPage";
+import DashboardPage from "./features/dashboard/DashboardPage";
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-    </Routes>
+    <AnimatePresence mode="wait">
+      <Routes>
+        {/* Redirect root to login */}
+        <Route path="/" element={<Navigate to="/auth/login" replace />} />
+
+        {/* Auth routes */}
+        <Route path="/auth/login" element={<LoginPage />} />
+        <Route path="/auth/register" element={<RegisterPage />} />
+        <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
+
+        {/* Dashboard placeholder */}
+        <Route path="/dashboard" element={<DashboardPage />} />
+
+        {/* Catch-all */}
+        <Route path="*" element={<Navigate to="/auth/login" replace />} />
+      </Routes>
+    </AnimatePresence>
   );
 }
