@@ -93,13 +93,13 @@ export default function DashboardLayout({ children }) {
               {user.name.charAt(0)}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-charcoal truncate">{user.name}</p>
+              <p className="text-sm font-extrabold text-charcoal truncate">{user.name}</p>
               <p className="text-xs text-warm-gray truncate">{user.role}</p>
             </div>
           </div>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-2 text-xs font-medium text-warm-gray hover:text-red-600 px-3 py-2 rounded-xl hover:bg-red-50 transition-colors"
+            className="w-full flex items-center justify-center gap-2 text-xs font-semibold text-white bg-red-600 hover:bg-red-700 hover:scale-105 active:scale-95 px-4 py-2.5 rounded-xl shadow-xs hover:shadow-md transition-all duration-200"
           >
             <LogOut size={15} /> Sign out
           </button>
@@ -151,8 +151,11 @@ export default function DashboardLayout({ children }) {
               );
             })}
             <div className="pt-3 border-t border-border mt-2 flex items-center justify-between">
-              <span className="text-xs text-warm-gray">{user.name}</span>
-              <button onClick={handleLogout} className="text-xs text-red-600 font-medium">
+              <span className="text-xs font-bold text-charcoal">{user.name}</span>
+              <button
+                onClick={handleLogout}
+                className="text-xs font-semibold text-white bg-red-600 hover:bg-red-700 hover:scale-105 active:scale-95 px-3.5 py-1.5 rounded-xl shadow-xs transition-all duration-200"
+              >
                 Sign out
               </button>
             </div>

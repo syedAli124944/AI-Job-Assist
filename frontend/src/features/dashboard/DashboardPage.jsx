@@ -18,7 +18,7 @@ export default function DashboardPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="font-fraunces text-3xl md:text-4xl text-charcoal font-semibold tracking-tight">
-              Good morning, {userName} 👋
+              Good morning, <span className="font-extrabold text-charcoal">{userName}</span> 👋
             </h1>
             <p className="text-warm-gray text-sm mt-1">
               Here is what's happening with your job search today.

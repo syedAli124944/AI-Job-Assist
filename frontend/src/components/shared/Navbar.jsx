@@ -53,25 +53,26 @@ export default function Navbar() {
         <nav className="hidden md:flex items-center gap-8">
           <button
             onClick={handleDashboardClick}
-            className="text-sm text-charcoal font-semibold hover:text-terracotta transition-colors"
+            className="text-sm text-charcoal font-bold hover:text-terracotta transition-colors"
           >
             Dashboard
           </button>
-          <a href="#features" className="text-sm text-warm-gray hover:text-charcoal transition-colors">Features</a>
-          <a href="#how-it-works" className="text-sm text-warm-gray hover:text-charcoal transition-colors">How it works</a>
-          <a href="#stats" className="text-sm text-warm-gray hover:text-charcoal transition-colors">Stats</a>
+          <a href="#features" className="text-sm font-bold text-warm-gray hover:text-charcoal transition-colors">Features</a>
+          <a href="#how-it-works" className="text-sm font-bold text-warm-gray hover:text-charcoal transition-colors">How it works</a>
+          <a href="#stats" className="text-sm font-bold text-warm-gray hover:text-charcoal transition-colors">Stats</a>
         </nav>
 
         {/* CTA buttons */}
         <div className="hidden md:flex items-center gap-3">
           {loggedIn ? (
             <div className="flex items-center gap-3">
-              <span className="text-xs font-bold text-charcoal bg-sand/70 px-3 py-1.5 rounded-xl border border-border">
-                Hi, {displayName}
+              <span className="text-xs font-bold text-white tracking-wide lowercase bg-[linear-gradient(90deg,#B4654A,#954F39,#7B5A39,#A77123,#91724F)] animate-gradient-luxury px-3.5 py-1.5 rounded-xl shadow-xs border border-white/25 hover:scale-105 transition-all duration-200 cursor-default select-none inline-flex items-center gap-2 transform-gpu antialiased">
+                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse shadow-xs" />
+                hi, {displayName.toLowerCase()}
               </span>
               <button
                 onClick={handleLogout}
-                className="bg-warm-gray/10 text-charcoal hover:bg-warm-gray/20 text-xs font-medium px-3.5 py-1.5 rounded-xl transition-colors"
+                className="bg-red-600 text-white hover:bg-red-700 hover:scale-105 active:scale-95 text-xs font-bold px-4 py-2 rounded-xl shadow-xs hover:shadow-md transition-all duration-200"
               >
                 Sign out
               </button>
@@ -80,13 +81,13 @@ export default function Navbar() {
             <>
               <Link
                 to="/auth/login"
-                className="text-sm font-medium text-charcoal hover:text-terracotta transition-colors"
+                className="text-sm font-bold text-charcoal hover:text-terracotta transition-colors"
               >
                 Sign in
               </Link>
               <Link
                 to="/onboarding"
-                className="bg-terracotta text-white text-sm font-medium px-5 py-2 rounded-xl hover:bg-terracotta-dark transition-colors"
+                className="bg-terracotta text-white text-sm font-bold px-5 py-2 rounded-xl hover:bg-terracotta-dark transition-colors"
               >
                 Get started
               </Link>
@@ -118,23 +119,24 @@ export default function Navbar() {
               setMobileOpen(false);
               handleDashboardClick();
             }}
-            className="text-sm font-semibold text-charcoal text-left"
+            className="text-sm font-bold text-charcoal text-left"
           >
             Dashboard
           </button>
-          <a href="#features" className="text-sm text-warm-gray" onClick={() => setMobileOpen(false)}>Features</a>
-          <a href="#how-it-works" className="text-sm text-warm-gray" onClick={() => setMobileOpen(false)}>How it works</a>
+          <a href="#features" className="text-sm font-bold text-warm-gray" onClick={() => setMobileOpen(false)}>Features</a>
+          <a href="#how-it-works" className="text-sm font-bold text-warm-gray" onClick={() => setMobileOpen(false)}>How it works</a>
           {loggedIn ? (
             <div className="flex flex-col gap-2 pt-2 border-t border-border">
-              <span className="text-xs font-semibold text-charcoal">
-                Hi, {displayName}
+              <span className="text-xs font-bold text-white tracking-wide lowercase bg-[linear-gradient(90deg,#B5654A,#954F39,#6B5B49,#D97706,#B5654A)] animate-gradient-luxury px-3.5 py-1.5 rounded-xl shadow-xs border border-white/25 inline-flex items-center gap-2 transform-gpu antialiased w-fit">
+                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse shadow-xs" />
+                hi, {displayName.toLowerCase()}
               </span>
               <button
                 onClick={() => {
                   setMobileOpen(false);
                   handleLogout();
                 }}
-                className="bg-warm-gray/10 text-charcoal text-sm font-medium px-5 py-2 rounded-xl text-center"
+                className="bg-red-600 text-white hover:bg-red-700 hover:scale-105 active:scale-95 text-xs font-bold px-5 py-2.5 rounded-xl text-center shadow-xs transition-all duration-200"
               >
                 Sign out
               </button>

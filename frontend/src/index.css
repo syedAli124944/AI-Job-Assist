@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -35,11 +35,16 @@
     margin: 0;
   }
 
-  h1, h2, h3, h4 {
+  h1,
+  h2,
+  h3,
+  h4 {
     font-family: 'Fraunces', serif;
     font-weight: 500;
     line-height: 1.2;
   }
+
+
 
   input:-webkit-autofill,
   input:-webkit-autofill:hover,
@@ -52,21 +57,15 @@
 
 @layer components {
   .auth-input {
-    @apply w-full px-4 py-3 rounded-btn border border-[#E0D5C5] bg-cream text-charcoal placeholder-warm-gray
-    text-sm outline-none transition-all duration-200
-    focus:border-terracotta focus:ring-2 focus:ring-terracotta/20;
+    @apply w-full px-4 py-3 rounded-btn border border-[#E0D5C5] bg-cream text-charcoal placeholder-warm-gray text-sm outline-none transition-all duration-200 focus:border-terracotta focus:ring-2 focus:ring-terracotta/20;
   }
 
   .btn-primary {
-    @apply w-full py-3 px-6 rounded-btn bg-terracotta text-white font-medium text-sm
-    transition-all duration-200 hover:bg-terracotta-dark active:scale-[0.98]
-    focus:outline-none focus:ring-2 focus:ring-terracotta/40 disabled:opacity-60 disabled:cursor-not-allowed;
+    @apply w-full py-3 px-6 rounded-btn bg-terracotta text-white font-medium text-sm transition-all duration-200 hover:bg-terracotta-dark active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-terracotta/40 disabled:opacity-60 disabled:cursor-not-allowed;
   }
 
   .btn-ghost {
-    @apply w-full py-3 px-6 rounded-btn border border-[#E0D5C5] bg-transparent text-charcoal font-medium text-sm
-    transition-all duration-200 hover:bg-sand active:scale-[0.98]
-    focus:outline-none focus:ring-2 focus:ring-charcoal/10;
+    @apply w-full py-3 px-6 rounded-btn border border-[#E0D5C5] bg-transparent text-charcoal font-medium text-sm transition-all duration-200 hover:bg-sand active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-charcoal/10;
   }
 
   .auth-card {
@@ -76,6 +75,23 @@
   .field-error {
     @apply text-red-500 text-xs mt-1;
   }
+}
+
+@keyframes luxury-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient-luxury {
+  background-size: 250% 250%;
+  animation: luxury-shift 5s ease infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
