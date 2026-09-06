@@ -21,7 +21,10 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql+psycopg2://postgres:postgres@db:5432/jobassistant"
 
     # CORS
-    ALLOWED_ORIGINS: list[str] = ["http://localhost:5173"]
+    ALLOWED_ORIGINS: list[str] = [
+        "http://localhost:5173",
+        "http://localhost:5174",
+    ]
 
     # LLM / Agents
     OPENAI_API_KEY: str | None = None

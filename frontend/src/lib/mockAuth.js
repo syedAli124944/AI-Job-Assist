@@ -32,6 +32,7 @@ export async function mockLogin({ email, password }) {
 
 export async function mockRegister({ name, email, password }) {
   try {
+    // Step 1: Register the user
     const response = await fetch(`${API_BASE_URL}/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -43,33 +44,47 @@ export async function mockRegister({ name, email, password }) {
       throw new Error(error.detail || "Registration failed");
     }
 
-    const user = await response.json();
+    // Step 2: Auto-login to get a JWT token
+    const loginResponse = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!loginResponse.ok) {
+      throw new Error("Registered but could not log in automatically. Please sign in manually.");
+    }
+
+    const loginData = await loginResponse.json();
+    localStorage.setItem("auth_token", loginData.access_token);
+
+    // Step 3: Fetch user profile
+    const userResponse = await fetch(`${API_BASE_URL}/auth/me`, {
+      headers: { Authorization: `Bearer ${loginData.access_token}` },
+    });
+    const user = await userResponse.json();
     localStorage.setItem("auth_user", JSON.stringify(user));
-    
-    return { user, token: null };
+
+    return { user, token: loginData.access_token };
   } catch (err) {
     throw new Error(err.message || "Registration failed");
   }
 }
 
 export async function mockForgotPassword({ email }) {
-  try {
-    const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
+  // Backend doesn't have this endpoint yet — simulate locally
+  await new Promise((res) => setTimeout(res, 1000));
+  if (!email) throw new Error("Email is required.");
+  return { message: "Reset link sent" };
+}
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.detail || "Failed to send reset link");
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (err) {
-    throw new Error(err.message || "Forgot password failed");
+export function getUserDisplayName() {
+  const user = getStoredUser();
+  if (!user) {
+    const localName = localStorage.getItem("user_name");
+    return localName || "User";
   }
+  return user.name || user.full_name || user.username || localStorage.getItem("user_name") || (user.email ? user.email.split("@")[0] : "User");
 }
 
 export function getStoredUser() {

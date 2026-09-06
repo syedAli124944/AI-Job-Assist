@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 // Reusable animated wrapper for auth pages
 const pageVariants = {
@@ -21,16 +22,14 @@ export default function AuthLayout({ children, title, subtitle }) {
         transition={{ duration: 0.35, ease: "easeOut" }}
         className="mb-8 text-center"
       >
-        <div className="inline-flex items-center gap-2 mb-1">
-          <div className="w-7 h-7 rounded-lg bg-terracotta flex items-center justify-center">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M2 7h10M7 2l5 5-5 5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+        <Link to="/" className="inline-flex items-center gap-2 mb-1 hover:opacity-80 transition-opacity">
+          <div className="w-8 h-8 rounded-lg bg-terracotta flex items-center justify-center">
+            <span className="text-white text-sm font-bold">AI</span>
           </div>
           <span className="font-fraunces font-semibold text-charcoal text-lg tracking-tight">
-            Hireflow
+            AI JobAssist
           </span>
-        </div>
+        </Link>
       </motion.div>
 
       {/* Card */}

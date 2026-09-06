@@ -24,7 +24,7 @@ export default function LoginPage() {
     setSubmitError("");
     try {
       await mockLogin(data);
-      navigate("/dashboard");
+      navigate("/onboarding");
     } catch (err) {
       setSubmitError(err.message);
     }
@@ -113,7 +113,7 @@ export default function LoginPage() {
               className="absolute right-3.5 top-1/2 -translate-y-1/2 text-warm-gray hover:text-charcoal transition-colors"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
-              {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+              {showPassword ? <EyeOff size={15} /> : <Eye size={20} />}
             </button>
           </div>
           {errors.password && (

@@ -1,0 +1,100 @@
+// ─── Mock Data Fixtures ──────────────────────────────────────────────────────
+// All mock API data used across the app. No real backend needed.
+
+export const MOCK_JOBS = [
+  {
+    id: "job-001",
+    title: "Senior Frontend Engineer",
+    company: "Notion",
+    logo: null,
+    location: "Remote",
+    type: "Full-time",
+    salary: "$140k – $180k",
+    experience: "5+ years",
+    matchScore: 92,
+    tags: ["React", "TypeScript", "Figma"],
+    postedAt: "2 days ago",
+    description: `We're looking for a Senior Frontend Engineer to join our team at Notion. You'll be working on our core product used by millions of people worldwide.\n\nYou will work closely with our design and backend teams to build fast, accessible, and delightful user interfaces. We value clean code, thoughtful architecture, and a strong sense of ownership.`,
+    requirements: ["5+ years of React experience", "TypeScript proficiency", "Experience with design systems", "Strong CSS fundamentals"],
+    about: "Notion is an all-in-one workspace for notes, docs, and project management. We believe everyone should be able to shape the tools they use.",
+  },
+  {
+    id: "job-002",
+    title: "Product Designer",
+    company: "Linear",
+    logo: null,
+    location: "San Francisco, CA",
+    type: "Full-time",
+    salary: "$120k – $160k",
+    experience: "3+ years",
+    matchScore: 78,
+    tags: ["Figma", "Prototyping", "Design Systems"],
+    postedAt: "5 days ago",
+    description: "Join Linear's design team to craft world-class product experiences for engineering teams globally.",
+    requirements: ["3+ years product design experience", "Expert Figma skills", "Portfolio of shipped products"],
+    about: "Linear is a purpose-built tool for planning and building products.",
+  },
+  {
+    id: "job-003",
+    title: "Full Stack Engineer",
+    company: "Vercel",
+    logo: null,
+    location: "Remote",
+    type: "Full-time",
+    salary: "$160k – $210k",
+    experience: "4+ years",
+    matchScore: 85,
+    tags: ["Next.js", "Node.js", "PostgreSQL"],
+    postedAt: "1 day ago",
+    description: "Build the future of web development at Vercel. Work on the infrastructure that powers millions of websites.",
+    requirements: ["Next.js expertise", "Node.js backend skills", "PostgreSQL experience", "CI/CD familiarity"],
+    about: "Vercel is the platform for frontend developers, providing the speed and reliability innovators need to create at the moment of inspiration.",
+  },
+  {
+    id: "job-004",
+    title: "UX Researcher",
+    company: "Figma",
+    logo: null,
+    location: "New York, NY",
+    type: "Full-time",
+    salary: "$100k – $140k",
+    experience: "2+ years",
+    matchScore: 67,
+    tags: ["User Research", "Usability Testing", "Figma"],
+    postedAt: "1 week ago",
+    description: "Help Figma understand its users better and drive product decisions with data-driven research insights.",
+    requirements: ["2+ years UX research experience", "Qualitative + quantitative research skills", "Strong communication"],
+    about: "Figma is the leading collaborative design tool for teams.",
+  },
+];
+
+export const MOCK_APPLICATIONS = [
+  { id: "app-001", jobTitle: "Senior Frontend Engineer", company: "Notion", status: "Interview", appliedAt: "Sep 2, 2026", logo: null },
+  { id: "app-002", jobTitle: "Product Designer", company: "Linear", status: "Applied", appliedAt: "Sep 4, 2026", logo: null },
+  { id: "app-003", jobTitle: "Full Stack Engineer", company: "Vercel", status: "Assessment", appliedAt: "Sep 5, 2026", logo: null },
+  { id: "app-004", jobTitle: "React Developer", company: "Stripe", status: "Offer", appliedAt: "Aug 28, 2026", logo: null },
+  { id: "app-005", jobTitle: "UI Engineer", company: "Airbnb", status: "Rejected", appliedAt: "Aug 20, 2026", logo: null },
+  { id: "app-006", jobTitle: "Frontend Lead", company: "Shopify", status: "Applied", appliedAt: "Sep 6, 2026", logo: null },
+];
+
+export const MOCK_NOTIFICATIONS = [
+  { id: "n-001", type: "interview", title: "Interview scheduled", message: "Your interview with Notion is on Sep 10 at 3:00 PM.", time: "1 hour ago", read: false },
+  { id: "n-002", type: "offer", title: "Offer received!", message: "Stripe has sent you an offer. Check it out now.", time: "3 hours ago", read: false },
+  { id: "n-003", type: "update", title: "Application viewed", message: "Linear viewed your application for Product Designer.", time: "Yesterday", read: true },
+  { id: "n-004", type: "reminder", title: "Follow-up reminder", message: "It's been a week since you applied to Airbnb. Consider following up.", time: "2 days ago", read: true },
+];
+
+export const MOCK_USER = {
+  id: "user-001",
+  name: "Alex Johnson",
+  email: "alex@example.com",
+  avatar: null,
+  role: "Senior Frontend Engineer",
+  profileCompletion: 78,
+  stats: {
+    applied: 12,
+    inReview: 4,
+    interviews: 3,
+    offers: 1,
+  },
+};

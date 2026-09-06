@@ -60,7 +60,7 @@ export default function RegisterPage() {
     setSubmitError("");
     try {
       await mockRegister(data);
-      navigate("/dashboard");
+      navigate("/onboarding");
     } catch (err) {
       setSubmitError(err.message);
     }
