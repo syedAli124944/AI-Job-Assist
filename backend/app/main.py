@@ -1,15 +1,13 @@
 from contextlib import asynccontextmanager
 
-from backend.app.api import applications
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import agents, auth, dashboard, health, jobs, notifications, profile, resume, ai
+from app.api import agents, ai, applications, auth, dashboard, health, jobs, notifications, profile, resume
 from app.core.config import get_settings
 from app.db.base import Base
 from app.db.session import engine
 import app.models  # noqa: F401 — ensures all models are registered on Base.metadata
-from app.api import agents, auth, health, profile
 
 settings = get_settings()
 

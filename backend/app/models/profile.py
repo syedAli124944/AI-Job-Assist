@@ -41,6 +41,8 @@ class Profile(Base):
     min_salary: Mapped[int | None] = mapped_column(Integer, nullable=True)
     resume_file_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
     resume_text: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # AI-extracted full profile stored as JSON text
+    parsed_profile: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(

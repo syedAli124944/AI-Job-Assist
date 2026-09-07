@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user
 from app.db.session import get_db
-from app.models.job import Application
+from app.models.application import Application
 from app.models.profile import Profile
 from app.models.resume import Resume
 from app.models.user import User

@@ -1,8 +1,13 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Plus, MapPin, Building2, ChevronRight, BookmarkCheck } from "lucide-react";
+import { Plus, MapPin, Building2, ChevronRight, BookmarkCheck, Trash2 } from "lucide-react";
 import DashboardLayout from "../dashboard/DashboardLayout";
-import { getUserApplications, saveUserApplications } from "../../lib/mockApi";
+import {
+  getUserApplications,
+  syncApplicationsFromBackend,
+  updateApplicationStatusLocal,
+  deleteApplicationLocal,
+} from "../../lib/mockApi";
 
 const COLUMNS = [
   { id: "Applied", title: "Applied", color: "bg-blue-500/10 text-blue-600 border-blue-200" },
@@ -14,8 +19,16 @@ const COLUMNS = [
 
 export default function ApplicationTrackerPage() {
   const [apps, setApps] = useState(() => getUserApplications());
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
+    syncApplicationsFromBackend()
+      .then((data) => {
+        if (data) setApps(data);
+      })
+      .finally(() => setLoading(false));
+
     const handleUpdate = () => {
       setApps(getUserApplications());
     };
@@ -23,10 +36,14 @@ export default function ApplicationTrackerPage() {
     return () => window.removeEventListener("applications_updated", handleUpdate);
   }, []);
 
-  const moveStatus = (appId, nextStatus) => {
-    const updated = apps.map((a) => (a.id === appId ? { ...a, status: nextStatus } : a));
-    setApps(updated);
-    saveUserApplications(updated);
+  const moveStatus = async (appId, nextStatus) => {
+    await updateApplicationStatusLocal(appId, nextStatus);
+  };
+
+  const removeApp = async (appId) => {
+    if (window.confirm("Remove this application from your tracker?")) {
+      await deleteApplicationLocal(appId);
+    }
   };
 
   return (
@@ -73,10 +90,17 @@ export default function ApplicationTrackerPage() {
                         animate={{ opacity: 1, scale: 1 }}
                         className="bg-cream border border-border rounded-xl p-3.5 shadow-xs hover:shadow-sm transition-all space-y-2"
                       >
-                        <div className="flex items-start justify-between">
+                        <div className="flex items-start justify-between gap-2">
                           <h4 className="font-semibold text-charcoal text-xs">
                             {app.jobTitle}
                           </h4>
+                          <button
+                            onClick={() => removeApp(app.id)}
+                            className="text-warm-gray/60 hover:text-red-500 transition-colors p-0.5 rounded hover:bg-red-50"
+                            title="Remove application"
+                          >
+                            <Trash2 size={13} />
+                          </button>
                         </div>
                         <p className="text-[11px] text-warm-gray flex items-center gap-1 font-medium">
                           <Building2 size={11} /> {app.company}

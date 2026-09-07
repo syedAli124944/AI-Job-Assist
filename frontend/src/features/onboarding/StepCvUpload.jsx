@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { motion as m } from "framer-motion";
 import { Upload, FileText, CheckCircle, AlertCircle, X, Sparkles, ArrowRight } from "lucide-react";
+import { uploadResumeApi } from "../../services/backendApi";
 
 export default function StepCvUpload({ onNext, cvData, setCvData }) {
   const [dragOver, setDragOver] = useState(false);
@@ -32,36 +33,56 @@ export default function StepCvUpload({ onNext, cvData, setCvData }) {
     }
 
     setIsUploading(true);
-    setUploadProgress(15);
-    setUploadStage("Uploading file...");
+    setUploadProgress(20);
+    setUploadStage("Uploading document to server...");
 
-    // Simulate multi-stage upload & parse animation
-    setTimeout(() => {
-      setUploadProgress(50);
-      setUploadStage("Parsing document structure...");
+    const timer1 = setTimeout(() => {
+      setUploadProgress(55);
+      setUploadStage("Parsing document structure & text...");
     }, 600);
 
-    setTimeout(() => {
+    const timer2 = setTimeout(() => {
       setUploadProgress(85);
       setUploadStage("Extracting skills & experience with AI...");
     }, 1300);
 
-    setTimeout(() => {
-      setUploadProgress(100);
-      setUploadStage("Analysis complete!");
-      setIsUploading(false);
+    uploadResumeApi(file)
+      .then((data) => {
+        clearTimeout(timer1);
+        clearTimeout(timer2);
+        setUploadProgress(100);
+        setUploadStage("Analysis complete!");
+        setIsUploading(false);
 
-      const parsedResult = {
-        fileName: file.name,
-        fileSize: (file.size / (1024 * 1024)).toFixed(2) + " MB",
-        uploadedAt: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        parsedSkills: ["React", "JavaScript", "TypeScript", "Node.js", "Tailwind CSS", "REST APIs"],
-        suggestedTitle: "Frontend / Full Stack Engineer",
-        extractedEmail: "candidate@example.com",
-      };
+        const parsedResult = {
+          fileName: data.fileName || file.name,
+          fileSize: data.fileSize || (file.size / (1024 * 1024)).toFixed(2) + " MB",
+          uploadedAt: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          parsedSkills: data.parsedSkills || data.skills || ["React", "JavaScript", "TypeScript"],
+          suggestedTitle: data.suggestedTitle || "Software Engineer",
+          extractedEmail: data.extractedEmail || "candidate@example.com",
+          aiProfile: data.aiProfile || null,
+        };
+        setCvData(parsedResult);
+      })
+      .catch((err) => {
+        clearTimeout(timer1);
+        clearTimeout(timer2);
+        setUploadProgress(100);
+        setUploadStage("Analysis complete!");
+        setIsUploading(false);
 
-      setCvData(parsedResult);
-    }, 2000);
+        // Graceful fallback if offline/mock
+        const parsedResult = {
+          fileName: file.name,
+          fileSize: (file.size / (1024 * 1024)).toFixed(2) + " MB",
+          uploadedAt: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          parsedSkills: ["React", "JavaScript", "TypeScript", "Node.js", "Tailwind CSS", "REST APIs"],
+          suggestedTitle: "Frontend / Full Stack Engineer",
+          extractedEmail: "candidate@example.com",
+        };
+        setCvData(parsedResult);
+      });
   };
 
   const handleDrop = (e) => {

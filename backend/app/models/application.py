@@ -5,7 +5,7 @@ current stage of that application (matches the Application Tracker page).
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, String
+from sqlalchemy import DateTime, ForeignKey, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
@@ -27,6 +27,8 @@ class Application(Base):
     job_id: Mapped[str | None] = mapped_column(String(255), nullable=True)
     job_title: Mapped[str] = mapped_column(String(255), nullable=False)
     company: Mapped[str] = mapped_column(String(255), nullable=False)
+    location: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    job_url: Mapped[str | None] = mapped_column(Text, nullable=True)
     status: Mapped[str] = mapped_column(String(50), nullable=False, default="Applied")
     logo: Mapped[str | None] = mapped_column(String(500), nullable=True)
 

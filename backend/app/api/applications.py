@@ -15,6 +15,7 @@ from app.services.application_service import (
     has_already_applied,
     update_application_status,
 )
+from app.services.notification_service import notify
 
 router = APIRouter(prefix="/applications", tags=["applications"])
 
@@ -50,7 +51,13 @@ def change_application_status(
     application = get_application_by_id(db, current_user.id, application_id)
     if application is None:
         raise HTTPException(status_code=404, detail="Application not found.")
-    return update_application_status(db, application, status_in.status.value)
+    updated = update_application_status(db, application, status_in.status.value)
+    notify(
+        db, current_user.id, "application",
+        f"Application status updated",
+        f"Your application to {updated.company} for '{updated.job_title}' is now: {updated.status}.",
+    )
+    return updated
 
 
 @router.delete("/{application_id}", status_code=status.HTTP_204_NO_CONTENT)

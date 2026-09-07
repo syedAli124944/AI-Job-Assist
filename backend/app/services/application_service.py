@@ -44,6 +44,8 @@ def create_application(db: Session, user_id: uuid.UUID, data: ApplicationCreate)
         job_id=data.job_id,
         job_title=data.job_title,
         company=data.company,
+        location=data.location,
+        job_url=data.job_url,
         logo=data.logo,
         status="Applied",
     )

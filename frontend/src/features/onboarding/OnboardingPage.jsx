@@ -23,6 +23,13 @@ export default function OnboardingPage() {
 
   const nextStep = () => {
     setDirection(1);
+    if (step === 1 && cvData?.parsedSkills?.length) {
+      setPreferences((prev) => ({
+        ...prev,
+        skills: Array.from(new Set([...cvData.parsedSkills, ...prev.skills])),
+        targetRoles: cvData.suggestedTitle ? [cvData.suggestedTitle, ...prev.targetRoles.filter((r) => r !== cvData.suggestedTitle)] : prev.targetRoles,
+      }));
+    }
     setStep((prev) => Math.min(prev + 1, 3));
   };
 

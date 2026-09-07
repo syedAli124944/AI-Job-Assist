@@ -2,18 +2,21 @@ import { useState } from "react";
 import { motion as m } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Sparkles, CheckCircle2, ArrowLeft, FileText, Briefcase, MapPin, DollarSign, Rocket } from "lucide-react";
+import { savePreferencesApi } from "../../services/backendApi";
 
 export default function StepReview({ onBack, cvData, preferences }) {
   const navigate = useNavigate();
   const [isFinishing, setIsFinishing] = useState(false);
 
-  const handleFinish = () => {
+  const handleFinish = async () => {
     setIsFinishing(true);
-    setTimeout(() => {
-      // Complete onboarding and go to dashboard
-      localStorage.setItem("onboarding_complete", "true");
-      navigate("/dashboard");
-    }, 1200);
+    try {
+      await savePreferencesApi(preferences);
+    } catch {
+      // Graceful fallback if offline
+    }
+    localStorage.setItem("onboarding_complete", "true");
+    navigate("/dashboard");
   };
 
   return (

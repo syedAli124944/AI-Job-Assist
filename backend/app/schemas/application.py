@@ -4,6 +4,7 @@ Pydantic v2 request/response schemas for the Application Tracker feature.
 import uuid
 from datetime import datetime
 from enum import Enum
+from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
@@ -17,10 +18,12 @@ class ApplicationStatus(str, Enum):
 
 
 class ApplicationCreate(BaseModel):
-    job_id: str | None = None
+    job_id: Optional[str] = None
     job_title: str
     company: str
-    logo: str | None = None
+    location: Optional[str] = None
+    job_url: Optional[str] = None
+    logo: Optional[str] = None
 
 
 class ApplicationStatusUpdate(BaseModel):
@@ -31,10 +34,12 @@ class ApplicationRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: uuid.UUID
-    job_id: str | None
+    job_id: Optional[str] = None
     job_title: str
     company: str
+    location: Optional[str] = None
+    job_url: Optional[str] = None
     status: str
-    logo: str | None
+    logo: Optional[str] = None
     applied_at: datetime
     updated_at: datetime
