@@ -8,7 +8,7 @@ to exactly one user.
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String
+from sqlalchemy import DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import ARRAY, UUID
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
@@ -32,10 +32,15 @@ class Profile(Base):
     full_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
     years_of_experience: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
-    # Stored as real Postgres arrays, e.g. {"Python","FastAPI","SQL"}
-    skills: Mapped[list[str] | None] = mapped_column(ARRAY(String), nullable=True)
-    preferred_job_titles: Mapped[list[str] | None] = mapped_column(ARRAY(String), nullable=True)
-    preferred_locations: Mapped[list[str] | None] = mapped_column(ARRAY(String), nullable=True)
+    # JSON is stored as text so the profile works with both PostgreSQL and
+    # local development databases without dialect-specific migrations.
+    skills: Mapped[str | None] = mapped_column(Text, nullable=True)
+    preferred_job_titles: Mapped[str | None] = mapped_column(Text, nullable=True)
+    preferred_locations: Mapped[str | None] = mapped_column(Text, nullable=True)
+    work_types: Mapped[str | None] = mapped_column(Text, nullable=True)
+    min_salary: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    resume_file_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    resume_text: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(

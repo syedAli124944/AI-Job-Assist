@@ -1,13 +1,15 @@
 from contextlib import asynccontextmanager
 
+from backend.app.api import applications
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import agents, auth, health
+from app.api import agents, auth, dashboard, health, jobs, notifications, profile, resume, ai
 from app.core.config import get_settings
 from app.db.base import Base
 from app.db.session import engine
 import app.models  # noqa: F401 — ensures all models are registered on Base.metadata
+from app.api import agents, auth, health, profile
 
 settings = get_settings()
 
@@ -37,3 +39,12 @@ app.add_middleware(
 app.include_router(health.router)
 app.include_router(auth.router)
 app.include_router(agents.router)
+app.include_router(jobs.router)
+app.include_router(applications.router)
+app.include_router(dashboard.router)
+app.include_router(notifications.router)
+app.include_router(profile.router)
+app.include_router(resume.router)
+app.include_router(ai.router)
+app.include_router(profile.router)
+app.include_router(applications.router)

@@ -33,6 +33,8 @@ class Settings(BaseSettings):
     # Job APIs
     ADZUNA_APP_ID: str | None = None
     ADZUNA_APP_KEY: str | None = None
+    ADZUNA_COUNTRY: str = "us"
+    OPENAI_MODEL: str = "gpt-4o-mini"
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
