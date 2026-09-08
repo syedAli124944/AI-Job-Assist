@@ -174,5 +174,5 @@ This means the app is fully explorable end-to-end even before any API keys are a
 - [ ] Add email/password reset flow on the backend (frontend page already exists)
 ## License
  
-This project is currently private / unlicensed. Add a license here if you plan to open-source it.
+This project is currently private ... Soon  we will open for community
  
