@@ -38,7 +38,13 @@ def apply_to_job(
         db, current_user.id, application_in.job_id, application_in.company, application_in.job_title
     ):
         raise HTTPException(status_code=400, detail="Already applied to this job.")
-    return create_application(db, current_user.id, application_in)
+    application = create_application(db, current_user.id, application_in)
+    notify(
+        db, current_user.id, "application",
+        f"Application submitted!",
+        f"You successfully applied to '{application.job_title}' at {application.company}. Tracking it in your Kanban board.",
+    )
+    return application
 
 
 @router.patch("/{application_id}/status", response_model=ApplicationRead)

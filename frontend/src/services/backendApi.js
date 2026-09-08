@@ -52,7 +52,7 @@ export const fetchRecommendedJobs = (params = {}) =>
   api.get("/jobs", { params }).then(({ data }) => data);
 
 export const fetchJob = (id) =>
-  api.get(`/jobs/${id}`).then(({ data }) => data);
+  api.get(`/jobs/${encodeURIComponent(id)}`).then(({ data }) => data);
 
 // ─── Notifications ────────────────────────────────────────────────────────────
 export const fetchNotifications = () =>
@@ -105,3 +105,26 @@ export const generateFollowUp = (job, applicationDate) =>
   api
     .post("/ai/followup", { job, application_date: applicationDate })
     .then(({ data }) => data.followUp);
+
+// ─── Agent Workflow ───────────────────────────────────────────────────────────
+/**
+ * Run the full LangGraph agent workflow: discover → analyze → rank → prepare.
+ * @param {Object} preferences - { role, location, skills[] }
+ * @returns {{ rankedJobs, topJob, coverLetter, error }}
+ */
+export const runAgentJobSearch = (preferences = {}) =>
+  api
+    .post("/agents/job-search-workflow", { preferences })
+    .then(({ data }) => data);
+
+// ─── Job Sync ─────────────────────────────────────────────────────────────────
+/**
+ * Trigger a background sync of jobs from Adzuna into the local DB cache.
+ * @param {string} query - Search query
+ * @param {string} location - Location filter
+ */
+export const syncJobs = (query = "", location = "") =>
+  api
+    .post("/jobs/sync", null, { params: { query, location, pages: 2 } })
+    .then(({ data }) => data);
+

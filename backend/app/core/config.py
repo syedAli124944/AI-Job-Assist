@@ -28,13 +28,18 @@ class Settings(BaseSettings):
 
     # LLM / Agents
     OPENAI_API_KEY: str | None = None
+    OPENAI_BASE_URL: str | None = None
     ANTHROPIC_API_KEY: str | None = None
+    OPENAI_MODEL: str = "gemini-3.6-flash"
 
-    # Job APIs
+    # Job APIs — JSearch via RapidAPI (Google Jobs, Indeed, LinkedIn aggregator)
+    JSEARCH_API_KEY: str | None = None
+    JSEARCH_API_HOST: str = "jsearch.p.rapidapi.com"
+
+    # Legacy Adzuna (kept for fallback)
     ADZUNA_APP_ID: str | None = None
     ADZUNA_APP_KEY: str | None = None
     ADZUNA_COUNTRY: str = "us"
-    OPENAI_MODEL: str = "gpt-4o-mini"
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

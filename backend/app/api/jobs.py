@@ -38,13 +38,33 @@ def list_jobs(
     db: Session = Depends(get_db),
 ):
     """
-    Search jobs via Adzuna and enrich each result with a matchScore based
-    on the authenticated user's profile skills. Falls back to stored_jobs if external provider is unreachable.
+    Search jobs live via Adzuna and enrich each result with a matchScore based
+    on the authenticated user's profile skills.
+    Infers query from candidate profile when q is empty.
     """
+    profile = db.query(Profile).filter(Profile.user_id == current_user.id).first()
+    effective_query = q.strip()
+    if not effective_query and profile:
+        if profile.preferred_job_titles:
+            try:
+                titles = json.loads(profile.preferred_job_titles)
+                if titles and isinstance(titles, list) and len(titles) > 0 and titles[0]:
+                    effective_query = str(titles[0])
+            except Exception:
+                if isinstance(profile.preferred_job_titles, str):
+                    effective_query = profile.preferred_job_titles.split(",")[0].strip()
+        if not effective_query and profile.skills:
+            try:
+                skills = json.loads(profile.skills)
+                if skills and isinstance(skills, list) and len(skills) > 0 and skills[0]:
+                    effective_query = str(skills[0])
+            except Exception:
+                pass
+
     try:
-        jobs = search_jobs(q, location, page)
+        jobs = search_jobs(effective_query, location, page)
     except Exception:
-        jobs = search_stored_jobs(db, query=q, location=location, limit=20, offset=(page - 1) * 20)
+        jobs = search_stored_jobs(db, query=effective_query, location=location, limit=20, offset=(page - 1) * 20)
 
     profile_skills = _get_profile_skills(db, current_user)
     return enrich_jobs_with_scores(profile_skills, jobs)
@@ -90,17 +110,38 @@ def search_jobs_cached(
     return enrich_jobs_with_scores(profile_skills, local_jobs)
 
 
-@router.get("/{job_id}")
+@router.get("/{job_id:path}")
 def get_job(
     job_id: str,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """Fetch a single job by its Adzuna ID."""
-    jobs = search_jobs("", None)
-    profile_skills = _get_profile_skills(db, current_user)
-    enriched = enrich_jobs_with_scores(profile_skills, jobs)
-    for job in enriched:
-        if job["id"] == job_id:
-            return job
+    """
+    Fetch a single job by ID.
+    1. Check local stored_jobs cache first (fast).
+    2. Fetch from JSearch API by job_id (accurate, works with JSearch IDs).
+    3. Return 404 if not found.
+    """
+    from app.models.stored_job import StoredJob
+    from app.services.job_sync_service import _row_to_dict
+    from app.services.job_provider import get_job_by_id
+
+    # Fast path: local DB cache
+    stored = db.query(StoredJob).filter(StoredJob.external_id == job_id).first()
+    if stored:
+        profile_skills = _get_profile_skills(db, current_user)
+        job = _row_to_dict(stored)
+        from app.services.matching_service import calculate_match_score
+        job["matchScore"] = calculate_match_score(profile_skills, job)
+        return job
+
+    # Accurate path: JSearch get-by-ID API
+    job = get_job_by_id(job_id)
+    if job:
+        profile_skills = _get_profile_skills(db, current_user)
+        from app.services.matching_service import calculate_match_score
+        job["matchScore"] = calculate_match_score(profile_skills, job)
+        return job
+
     raise HTTPException(status_code=404, detail="Job not found")
+

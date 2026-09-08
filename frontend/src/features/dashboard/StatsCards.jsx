@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Send, Users, Award, UserCheck } from "lucide-react";
-import { fetchUserStats } from "../../lib/mockApi";
+import { fetchUserStats } from "../../services/backendApi";
 
 export default function StatsCards({ stats: propStats }) {
   const [liveStats, setLiveStats] = useState({

@@ -17,7 +17,7 @@ services:
 
   backend:
     build: ./backend
-    env_file: .env
+    env_file: ./backend/.env
     environment:
       DATABASE_URL: postgresql+psycopg2://postgres:postgres@db:5432/jobassistant
     ports:

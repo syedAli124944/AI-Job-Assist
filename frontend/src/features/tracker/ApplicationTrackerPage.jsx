@@ -3,11 +3,10 @@ import { motion } from "framer-motion";
 import { Plus, MapPin, Building2, ChevronRight, BookmarkCheck, Trash2 } from "lucide-react";
 import DashboardLayout from "../dashboard/DashboardLayout";
 import {
-  getUserApplications,
-  syncApplicationsFromBackend,
-  updateApplicationStatusLocal,
-  deleteApplicationLocal,
-} from "../../lib/mockApi";
+  fetchApplications,
+  updateApplicationStatus,
+  deleteApplication,
+} from "../../services/backendApi";
 
 const COLUMNS = [
   { id: "Applied", title: "Applied", color: "bg-blue-500/10 text-blue-600 border-blue-200" },
@@ -18,31 +17,58 @@ const COLUMNS = [
 ];
 
 export default function ApplicationTrackerPage() {
-  const [apps, setApps] = useState(() => getUserApplications());
+  const [apps, setApps] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
+  const loadApplications = () => {
     setLoading(true);
-    syncApplicationsFromBackend()
+    fetchApplications()
       .then((data) => {
-        if (data) setApps(data);
+        if (data) {
+          // Map backend application data to frontend format
+          const formattedApps = data.map(app => ({
+            id: app.id,
+            job_id: app.job_id,
+            jobTitle: app.job_title,
+            company: app.company,
+            status: app.status || "Applied",
+            appliedAt: app.applied_at ? new Date(app.applied_at).toLocaleDateString() : "Unknown",
+          }));
+          setApps(formattedApps);
+        }
       })
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    loadApplications();
 
     const handleUpdate = () => {
-      setApps(getUserApplications());
+      loadApplications();
     };
     window.addEventListener("applications_updated", handleUpdate);
     return () => window.removeEventListener("applications_updated", handleUpdate);
   }, []);
 
   const moveStatus = async (appId, nextStatus) => {
-    await updateApplicationStatusLocal(appId, nextStatus);
+    // Optimistic UI update
+    setApps(apps.map(app => app.id === appId ? { ...app, status: nextStatus } : app));
+    try {
+      await updateApplicationStatus(appId, nextStatus);
+    } catch (e) {
+      loadApplications(); // Revert on failure
+    }
   };
 
   const removeApp = async (appId) => {
     if (window.confirm("Remove this application from your tracker?")) {
-      await deleteApplicationLocal(appId);
+      // Optimistic UI update
+      setApps(apps.filter(app => app.id !== appId));
+      try {
+        await deleteApplication(appId);
+      } catch (e) {
+        loadApplications(); // Revert on failure
+      }
     }
   };
 

@@ -1,11 +1,8 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { MapPin, DollarSign, Clock, ArrowUpRight, Sparkles, CheckCircle2 } from "lucide-react";
-import { hasUserApplied } from "../../lib/mockApi";
 
-export default function JobCard({ job }) {
-  const isApplied = hasUserApplied(job.id, job.company, job.title);
-
+export default function JobCard({ job, isApplied = false }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -39,7 +36,7 @@ export default function JobCard({ job }) {
               </span>
             )}
             <span className="bg-deep-green/15 text-deep-green px-2.5 py-1 rounded-full text-xs font-bold font-mono flex items-center gap-1">
-              <Sparkles size={11} /> {job.matchScore}%
+              <Sparkles size={11} /> {job.matchScore ?? 0}%
             </span>
           </div>
         </div>
@@ -58,7 +55,7 @@ export default function JobCard({ job }) {
             <DollarSign size={12} className="text-terracotta" /> {job.salary}
           </span>
           <span className="flex items-center gap-1 font-medium text-warm-gray bg-sand/60 px-2.5 py-1 rounded-lg">
-            <Clock size={12} /> {job.experience}
+            <Clock size={12} /> {job.type || job.experience}
           </span>
         </div>
 
@@ -77,8 +74,10 @@ export default function JobCard({ job }) {
 
       {/* Action CTA */}
       <div className="pt-4 border-t border-border flex items-center justify-between">
+        {/* Pass full job object via router state — avoids needing a /jobs/:id API */}
         <Link
-          to={`/jobs/${job.id}`}
+          to={`/jobs/${encodeURIComponent(job.id)}`}
+          state={{ job }}
           className="text-xs font-semibold text-warm-gray hover:text-charcoal transition-colors"
         >
           View Details
@@ -90,7 +89,8 @@ export default function JobCard({ job }) {
           </span>
         ) : (
           <Link
-            to={`/cover-letter/${job.id}`}
+            to={`/cover-letter/${encodeURIComponent(job.id)}`}
+            state={{ job }}
             className="btn-primary inline-flex items-center gap-1 text-xs px-4 py-2"
           >
             Apply with AI <ArrowUpRight size={14} />

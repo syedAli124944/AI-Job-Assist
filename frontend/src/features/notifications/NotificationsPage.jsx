@@ -4,35 +4,46 @@ import { Bell, Calendar, Award, Eye, CheckCheck, Clock, Settings, Trash2 } from 
 import DashboardLayout from "../dashboard/DashboardLayout";
 import NotificationSettingsModal from "../../components/shared/NotificationSettingsModal";
 import {
-  getUserNotifications,
+  fetchNotifications,
   markNotificationRead,
   markAllNotificationsRead,
   deleteNotification,
-} from "../../lib/mockApi";
+} from "../../services/backendApi";
 
 export default function NotificationsPage() {
-  const [notifications, setNotifications] = useState(() => getUserNotifications());
+  const [notifications, setNotifications] = useState([]);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
+  const loadNotifications = () => {
+    fetchNotifications().then(data => {
+      if (data) setNotifications(data);
+    }).catch(console.error);
+  };
+
   useEffect(() => {
+    loadNotifications();
+
     const handleUpdate = () => {
-      setNotifications(getUserNotifications());
+      loadNotifications();
     };
     window.addEventListener("notifications_updated", handleUpdate);
     return () => window.removeEventListener("notifications_updated", handleUpdate);
   }, []);
 
-  const handleMarkAllRead = () => {
-    markAllNotificationsRead();
+  const handleMarkAllRead = async () => {
+    setNotifications(notifications.map(n => ({ ...n, read: true })));
+    await markAllNotificationsRead();
   };
 
-  const handleToggleRead = (id) => {
-    markNotificationRead(id);
+  const handleToggleRead = async (id) => {
+    setNotifications(notifications.map(n => n.id === id ? { ...n, read: true } : n));
+    await markNotificationRead(id);
   };
 
-  const handleDelete = (e, id) => {
+  const handleDelete = async (e, id) => {
     e.stopPropagation();
-    deleteNotification(id);
+    setNotifications(notifications.filter(n => n.id !== id));
+    await deleteNotification(id);
   };
 
   const unreadCount = notifications.filter((n) => !n.read).length;

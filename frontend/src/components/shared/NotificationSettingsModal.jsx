@@ -1,11 +1,18 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Bell, Mail, Volume2, ShieldCheck, Check, RotateCcw } from "lucide-react";
-import {
-  getNotificationSettings,
-  saveNotificationSettings,
-  DEFAULT_NOTIFICATION_SETTINGS,
-} from "../../lib/mockApi";
+import { DEFAULT_NOTIFICATION_SETTINGS } from "../../services/backendApi";
+
+const getNotificationSettings = () => {
+  const stored = localStorage.getItem("notification_settings");
+  if (stored) return JSON.parse(stored);
+  return DEFAULT_NOTIFICATION_SETTINGS;
+};
+
+const saveNotificationSettings = (settings) => {
+  localStorage.setItem("notification_settings", JSON.stringify(settings));
+  window.dispatchEvent(new Event("notification_settings_updated"));
+};
 
 export default function NotificationSettingsModal({ isOpen, onClose }) {
   const [settings, setSettings] = useState(DEFAULT_NOTIFICATION_SETTINGS);

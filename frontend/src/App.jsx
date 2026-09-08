@@ -51,8 +51,11 @@ export default function App() {
         <Route path="/onboarding" element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
         <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
         <Route path="/jobs" element={<ProtectedRoute><JobSearchPage /></ProtectedRoute>} />
+        <Route path="/jobs/:id/*" element={<ProtectedRoute><JobDetailPage /></ProtectedRoute>} />
         <Route path="/jobs/:id" element={<ProtectedRoute><JobDetailPage /></ProtectedRoute>} />
+        <Route path="/cover-letter/:jobId/*" element={<ProtectedRoute><CoverLetterPage /></ProtectedRoute>} />
         <Route path="/cover-letter/:jobId" element={<ProtectedRoute><CoverLetterPage /></ProtectedRoute>} />
+        <Route path="/cover-letter/*" element={<ProtectedRoute><CoverLetterPage /></ProtectedRoute>} />
         <Route path="/applications" element={<ProtectedRoute><ApplicationTrackerPage /></ProtectedRoute>} />
         <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
 

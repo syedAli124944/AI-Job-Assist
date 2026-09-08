@@ -1,13 +1,16 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import DashboardLayout from "../dashboard/DashboardLayout";
 import SearchBar from "./SearchBar";
 import FilterPanel from "./FilterPanel";
 import JobList from "./JobList";
-import { MOCK_JOBS } from "../../lib/mockData";
+import { fetchRecommendedJobs, fetchApplications } from "../../services/backendApi";
 
 export default function JobSearchPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+  const [liveJobs, setLiveJobs] = useState([]);
+  const [appliedJobIds, setAppliedJobIds] = useState(new Set());
+  const [loading, setLoading] = useState(true);
 
   const [filters, setFilters] = useState({
     location: "All",
@@ -16,6 +19,54 @@ export default function JobSearchPage() {
     experience: "All",
     setup: "All",
   });
+
+  // Fetch real applications from backend for accurate 'Applied' status
+  useEffect(() => {
+    fetchApplications()
+      .then((apps) => {
+        if (Array.isArray(apps)) {
+          const ids = new Set(apps.map((a) => String(a.job_id)));
+          setAppliedJobIds(ids);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Fetch real live jobs from Adzuna API whenever searchQuery or location filter changes
+  useEffect(() => {
+    let isSubscribed = true;
+    setLoading(true);
+
+    const params = {};
+    if (searchQuery.trim()) {
+      params.q = searchQuery.trim();
+    }
+    if (filters.location !== "All") {
+      params.location = filters.location;
+    }
+
+    fetchRecommendedJobs(params)
+      .then((data) => {
+        if (isSubscribed) {
+          if (Array.isArray(data)) {
+            setLiveJobs(data);
+          } else {
+            setLiveJobs([]);
+          }
+          setLoading(false);
+        }
+      })
+      .catch(() => {
+        if (isSubscribed) {
+          setLiveJobs([]);
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, [searchQuery, filters.location]);
 
   const handleResetFilters = () => {
     setFilters({
@@ -28,16 +79,17 @@ export default function JobSearchPage() {
     setSearchQuery("");
   };
 
-  // Filter logic
+  // Client-side filter logic
   const filteredJobs = useMemo(() => {
-    return MOCK_JOBS.filter((job) => {
+    return liveJobs.filter((job) => {
       // Search query filter
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase();
-        const matchesTitle = job.title.toLowerCase().includes(query);
-        const matchesCompany = job.company.toLowerCase().includes(query);
+        const matchesTitle = job.title?.toLowerCase().includes(query);
+        const matchesCompany = job.company?.toLowerCase().includes(query);
+        const matchesDesc = job.description?.toLowerCase().includes(query);
         const matchesTags = job.tags?.some((t) => t.toLowerCase().includes(query));
-        if (!matchesTitle && !matchesCompany && !matchesTags) return false;
+        if (!matchesTitle && !matchesCompany && !matchesDesc && !matchesTags) return false;
       }
 
       // Location filter
@@ -63,7 +115,7 @@ export default function JobSearchPage() {
 
       return true;
     });
-  }, [searchQuery, filters]);
+  }, [liveJobs, searchQuery, filters]);
 
   return (
     <DashboardLayout>
@@ -74,7 +126,7 @@ export default function JobSearchPage() {
             Find Matches & Jobs
           </h1>
           <p className="text-warm-gray text-sm mt-1">
-            Discover roles tailored to your resume experience and target career preferences.
+            Live fetching real company openings matching your search criteria.
           </p>
         </div>
 
@@ -110,7 +162,14 @@ export default function JobSearchPage() {
 
           {/* Job Results List */}
           <div className="lg:col-span-3">
-            <JobList jobs={filteredJobs} />
+            {loading ? (
+              <div className="p-12 text-center bg-cream rounded-2xl border border-border">
+                <div className="inline-block w-8 h-8 border-4 border-terracotta border-t-transparent rounded-full animate-spin mb-3"></div>
+                <p className="text-sm font-semibold text-charcoal">Live fetching real jobs from Adzuna API...</p>
+              </div>
+            ) : (
+              <JobList jobs={filteredJobs} appliedJobIds={appliedJobIds} />
+            )}
           </div>
         </div>
       </div>

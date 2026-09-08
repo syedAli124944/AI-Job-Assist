@@ -195,9 +195,10 @@ def _ai_extract_profile(text: str, settings) -> Optional[dict]:
     Returns parsed dict on success, None on any failure (graceful fallback).
     """
     try:
-        from openai import OpenAI  # lazy import — not required if key absent
-
-        client = OpenAI(api_key=settings.OPENAI_API_KEY)
+        kwargs = {"api_key": settings.OPENAI_API_KEY}
+        if settings.OPENAI_BASE_URL:
+            kwargs["base_url"] = settings.OPENAI_BASE_URL
+        client = OpenAI(**kwargs)
         # Truncate very long resumes to stay within token limits
         truncated = text[:8000]
         response = client.chat.completions.create(
@@ -207,9 +208,10 @@ def _ai_extract_profile(text: str, settings) -> Optional[dict]:
             max_tokens=1500,
         )
         raw = response.choices[0].message.content or ""
-        # Strip markdown fences if model adds them
-        raw = raw.strip().lstrip("```json").lstrip("```").rstrip("```").strip()
-        return json.loads(raw)
+        # Strip markdown code fences (```json ... ``` or ``` ... ```)
+        raw = re.sub(r"^```(?:json)?\s*", "", raw.strip(), flags=re.IGNORECASE)
+        raw = re.sub(r"\s*```$", "", raw.strip())
+        return json.loads(raw.strip())
     except Exception:
         # If AI fails for any reason, fall through to keyword fallback
         return None

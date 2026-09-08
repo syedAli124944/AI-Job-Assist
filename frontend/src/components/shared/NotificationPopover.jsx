@@ -3,42 +3,48 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bell, Calendar, Award, Eye, CheckCheck, ChevronRight, Settings } from "lucide-react";
 import {
-  getUserNotifications,
+  fetchNotifications,
   markNotificationRead,
   markAllNotificationsRead,
-  getNotificationSettings,
-} from "../../lib/mockApi";
+} from "../../services/backendApi";
+import { DEFAULT_NOTIFICATION_SETTINGS } from "../../services/backendApi";
 import NotificationSettingsModal from "./NotificationSettingsModal";
 
 export default function NotificationPopover() {
   const [open, setOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [notifications, setNotifications] = useState(() => getUserNotifications());
-  const [notifSettings, setNotifSettings] = useState(() => getNotificationSettings());
+  const [notifications, setNotifications] = useState([]);
+  const [notifSettings, setNotifSettings] = useState(DEFAULT_NOTIFICATION_SETTINGS);
   const popoverRef = useRef(null);
 
+  const loadNotifications = () => {
+    fetchNotifications().then(data => {
+      if (data) setNotifications(data);
+    }).catch(console.error);
+  };
+
   useEffect(() => {
+    loadNotifications();
     const handleUpdate = () => {
-      setNotifications(getUserNotifications());
-      setNotifSettings(getNotificationSettings());
+      loadNotifications();
     };
     window.addEventListener("notifications_updated", handleUpdate);
-    window.addEventListener("notification_settings_updated", handleUpdate);
     return () => {
       window.removeEventListener("notifications_updated", handleUpdate);
-      window.removeEventListener("notification_settings_updated", handleUpdate);
     };
   }, []);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  const handleMarkAllRead = (e) => {
+  const handleMarkAllRead = async (e) => {
     e.stopPropagation();
-    markAllNotificationsRead();
+    setNotifications(notifications.map(n => ({ ...n, read: true })));
+    await markAllNotificationsRead();
   };
 
-  const handleNotifClick = (id) => {
-    markNotificationRead(id);
+  const handleNotifClick = async (id) => {
+    setNotifications(notifications.map(n => n.id === id ? { ...n, read: true } : n));
+    await markNotificationRead(id);
   };
 
   // Close dropdown on outside click

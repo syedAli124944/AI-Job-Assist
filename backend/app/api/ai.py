@@ -26,7 +26,10 @@ def _get_openai_client():
             status_code=503,
             detail="AI features are not configured. Set OPENAI_API_KEY in your .env file.",
         )
-    return OpenAI(api_key=settings.OPENAI_API_KEY), settings
+    kwargs = {"api_key": settings.OPENAI_API_KEY}
+    if settings.OPENAI_BASE_URL:
+        kwargs["base_url"] = settings.OPENAI_BASE_URL
+    return OpenAI(**kwargs), settings
 
 
 def _call_llm(client: OpenAI, model: str, prompt: str) -> str:
@@ -38,7 +41,9 @@ def _call_llm(client: OpenAI, model: str, prompt: str) -> str:
         )
         return response.choices[0].message.content
     except Exception as exc:
-        raise HTTPException(status_code=502, detail="The AI provider returned an error.") from exc
+        import logging
+        logging.getLogger(__name__).error("LLM call failed for model '%s': %s", model, exc)
+        raise HTTPException(status_code=502, detail=f"The AI provider returned an error: {exc}") from exc
 
 
 # ─── Schemas ──────────────────────────────────────────────────────────────────

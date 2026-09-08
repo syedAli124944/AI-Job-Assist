@@ -2,7 +2,7 @@ import { useState } from "react";
 import JobCard from "./JobCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export default function JobList({ jobs }) {
+export default function JobList({ jobs, appliedJobIds = new Set() }) {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = 20;
 
@@ -20,7 +20,7 @@ export default function JobList({ jobs }) {
       {/* Job Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
         {jobs.map((job) => (
-          <JobCard key={job.id} job={job} />
+          <JobCard key={job.id} job={job} isApplied={appliedJobIds.has(String(job.id))} />
         ))}
       </div>
 
