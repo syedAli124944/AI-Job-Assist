@@ -9,7 +9,6 @@ all-MiniLM-L6-v2 when the library is available.
 """
 from __future__ import annotations
 
-
 def calculate_match_score(profile_skills: list[str], job: dict) -> int:
     """
     Return an integer 0–100 representing how well the candidate's skills
