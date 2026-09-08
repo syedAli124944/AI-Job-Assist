@@ -33,7 +33,7 @@ def test_auth_flow():
     assert data["email"] == unique_email
     assert "id" in data
 
-    # 2. Login
+    # 2. Login 
     login_res = client.post("/auth/login", json={"email": unique_email, "password": password})
     assert login_res.status_code == 200
     token = login_res.json()["access_token"]
