@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     ALLOWED_ORIGINS: list[str] = [
         "http://localhost:5173",
         "http://localhost:5174",
+        "https://ai-job-assist-taupe.vercel.app",
     ]
 
     # LLM / Agents
